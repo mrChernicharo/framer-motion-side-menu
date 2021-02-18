@@ -1,62 +1,45 @@
-import { ReactNode, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ContentPlaceholder } from "./ContentPlaceholder";
+import * as React from "react";
+import { useRef } from "react";
+import { motion, useCycle } from "framer-motion";
+import { useDimensions } from "./useDimensions";
+import { MenuToggle } from "./MenuToggle";
+import { Navigation } from "./Navigation";
 
-const Accordion = ({ i, expanded, setExpanded }) => {
-  const isOpen = i === expanded;
-
-  // By using `AnimatePresence` to mount and unmount the contents, we can animate
-  // them in and out while also only rendering the contents of open accordions
-  return (
-    <>
-      <motion.header
-        initial={false}
-        onClick={() => setExpanded(isOpen ? false : i)}
-        animate={{
-          backgroundColor: isOpen ? "#FF0088" : "#0055FF",
-        }}
-      >
-        <p style={{ textAlign: "center", paddingTop: 7 }}>Header Item</p>
-      </motion.header>
-
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.section
-            key="content"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={{
-              open: { opacity: 1, height: "auto" },
-              collapsed: { opacity: 0, height: 0 },
-            }}
-            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
-          >
-            <ContentPlaceholder />
-          </motion.section>
-        )}
-      </AnimatePresence>
-    </>
-  );
+const sidebar = {
+  open: (height = 1000) => ({
+    clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
+    transition: {
+      type: "spring",
+      stiffness: 20,
+      restDelta: 2,
+    },
+  }),
+  closed: {
+    clipPath: "circle(30px at 40px 40px)",
+    transition: {
+      delay: 0.5,
+      type: "spring",
+      stiffness: 400,
+      damping: 40,
+    },
+  },
 };
 
 export const Example = () => {
-  // This approach is if you only want max one section open at a time. If you want multiple
-  // sections to potentially be open simultaneously, they can all be given their own `useState`.
-  const [expanded, setExpanded] = useState<false | number>(0);
+  const [isOpen, toggleOpen] = useCycle(false, true);
+  const containerRef = useRef(null);
+  const { height } = useDimensions(containerRef);
 
   return (
-    <>
-      {accordionIds.map((i) => (
-        <Accordion
-          key={i}
-          i={i}
-          expanded={expanded}
-          setExpanded={setExpanded}
-        />
-      ))}
-    </>
+    <motion.nav
+      initial={false}
+      animate={isOpen ? "open" : "closed"}
+      custom={height}
+      ref={containerRef}
+    >
+      <motion.div className="background" variants={sidebar} />
+      <Navigation />
+      <MenuToggle toggle={() => toggleOpen()} />
+    </motion.nav>
   );
 };
-
-const accordionIds = [0, 1, 2, 3];

@@ -15,8 +15,8 @@ export const Word = ({ width }) => <div className="word" style={{ width }} />;
 
 const Paragraph = ({ words }) => (
   <div className="paragraph">
-    {words.map((width) => (
-      <Word width={width} />
+    {words.map((width, i) => (
+      <Word key={i} width={width} />
     ))}
   </div>
 );
@@ -24,11 +24,11 @@ const Paragraph = ({ words }) => (
 export const ContentPlaceholder = () => (
   <motion.div
     variants={{ collapsed: { scale: 0.8 }, open: { scale: 1 } }}
-    transition={{ duration: 0.8 }}
+    transition={{ duration: 1 }}
     className="content-placeholder"
   >
-    {paragraphs.map((words) => (
-      <Paragraph words={words} />
+    {paragraphs.map((words, i) => (
+      <Paragraph key={i} words={words} />
     ))}
   </motion.div>
 );

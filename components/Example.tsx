@@ -11,9 +11,14 @@ const Accordion = ({ i, expanded, setExpanded }) => {
     <>
       <motion.header
         initial={false}
-        animate={{ backgroundColor: isOpen ? "#FF0088" : "#0055FF" }}
         onClick={() => setExpanded(isOpen ? false : i)}
-      />
+        animate={{
+          backgroundColor: isOpen ? "#FF0088" : "#0055FF",
+        }}
+      >
+        <p style={{ textAlign: "center", paddingTop: 7 }}>Header Item</p>
+      </motion.header>
+
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.section
